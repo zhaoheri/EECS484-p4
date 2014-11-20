@@ -1,2 +1,6 @@
 #ignore all .o files
 /p4_blank/*.o
+/p4_blank/dbcreate
+/p4_blank/dbdestroy
+/p4_blank/minirel
+/p4_blank/testdb
