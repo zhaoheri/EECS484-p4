@@ -17,6 +17,27 @@ Status Operators::ScanSelect(const string& result,       // Name of the output r
   cout << "Algorithm: File Scan" << endl;
   
   /* Your solution goes here */
+  
+  Status status;
+  //Open the output heapfile
+  HeapFile output(result, status);
+  if(status != OK)
+  	return status;
+
+  Record record;
+  record.length = 0;
+
+  //Open the relation file scan
+  string rName = attrDesc->relName;
+  HeapFileScan relFile(rName, status);
+  if(status != OK)
+  	return status;
+  char* filter = attrValue;
+  int offset = attrDesc->attrOffset;
+  Datatype type = attrDesc->attrType;
+  int length = attrDesc->attrLen;
+  status = startScan();
+
 
   return OK;
 }

@@ -23,11 +23,19 @@ Status Updates::Insert(const string& relation,      // Name of the relation
     
     //Get the attrLen for each element in attrList[]
     //And re-order all the elements into the new array: attrInfo insertAttrList[]
+    Status status;
     Record record;
     int attrNum;
     record.length = 0;
     AttrDesc *attrs = new AttrDesc[attrCnt];
-    attrCat->getRelInfo(relation, attrNum, attrs);
+    status = attrCat->getRelInfo(relation, attrNum, attrs);
+    if(status != OK) 
+        return status;
+    if(attrNum != attrCnt)
+    {
+        //error
+    }
+
     attrInfo *insertAttrList = new attrInfo[attrCnt];
     for(int i = 0; i < attrCnt; i++)
     { 
@@ -50,20 +58,25 @@ Status Updates::Insert(const string& relation,      // Name of the relation
     void *temp = record.data;
     for(int i = 0; i < attrNum; i++)
     {
-        temp = memcpy(temp, insertAttrList[i].attrValue, insertAttrList[i].attrLen);
-        temp = insertAttrList[i].attrLen + (char*)temp;
+        // cout << *(int *)insertAttrList[i].attrValue << endl;
+        temp = attrs[i].attrOffset;
+        memcpy(temp, insertAttrList[i].attrValue, insertAttrList[i].attrLen);
     }
 
     //Insert the record in the heapfile
     Status returnStatus;
     HeapFile heapfile(relation, returnStatus);
+    if(returnStatus != OK)
+        return returnStatus;
     RID rid;
-    heapfile.insertRecord(record, rid);
-
+    status = heapfile.insertRecord(record, rid);
+    if(status != OK)
+        return status;
+    
     //Delete memory
     delete attrs;
     delete insertAttrList;
-    free record.data;
+    free(record.data);
 
     return OK;
 }

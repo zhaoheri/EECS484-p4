@@ -16,7 +16,23 @@ Status Operators::Select(const string & result,      // name of the output relat
 		         const Operator op,         // predicate operation
 		         const void *attrValue)     // literal value in the predicate
 {
+	//check if there is an index for the selection predicate: attr
+	//Get attribute info
+	Status status;
+	AttrDesc attrdesc;
+	string rName = attr->relName;
+	string attrName = attr->attrName;
+	status = getInfo(rName, attrName, attrdesc);
+	if(status != OK)
+		return status;
 
-return OK;
+	int reclen = 0;
+	string result;
+	if(attrdesc.indexed && op == EQ)
+		IndexSelect(result, projCnt, projNames, &attrdesc, op, attrValue, reclen);
+	else
+		ScanSelect(result, projCnt, projNames, &attrdesc, op, attrValue, reclen);
+
+	return OK;
 }
 
